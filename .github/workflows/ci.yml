@@ -1,3 +1,15 @@
+name: End-to-End DevOps CI Pipeline
+
+# 1. TRIGGER: Run this script automatically every time someone pushes code to the main branch
+on:
+  push:
+    branches: [ "main" ]
+
+jobs:
+  security-and-build:
+    # Tell GitHub to spin up a fresh, temporary Ubuntu Linux machine in the cloud
+    runs-on: ubuntu-latest
+
     steps:
     # Step 1: Download your repository code onto the runner machine
     - name: Checkout Source Code
