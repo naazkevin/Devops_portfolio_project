@@ -27,13 +27,14 @@ jobs:
         cd Phase_2_CICD
         npm install
 
-    # Step 4: Run the automated security scan
+    # Step 4: Run the automated security scan using Snyk CLI
     - name: Run Snyk Security Vulnerability Scan
-      uses: snyk/actions/node@master
       env:
         SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
-      with:
-        working-directory: Phase_2_CICD
+      run: |
+        cd Phase_2_CICD
+        npx snyk test --severity-threshold=high
+
 
     # Step 5: Initialize Docker's build environment
     - name: Set up Docker Buildx
