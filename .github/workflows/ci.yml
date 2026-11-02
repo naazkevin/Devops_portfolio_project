@@ -32,7 +32,7 @@ jobs:
       env:
         SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
       with:
-        args: --severity-threshold=high
+        args: --severity-threshold=high --file=Phase_2_CICD/package.json
 
     # Step 5: If security checks pass, build and push the container to Docker Hub
     - name: Build and Push Docker Image
