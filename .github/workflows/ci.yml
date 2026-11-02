@@ -1,17 +1,14 @@
 name: End-to-End DevOps CI Pipeline
 
-# 1. TRIGGER: Run this script automatically every time someone pushes code to the main branch
 on:
   push:
     branches: [ "main" ]
 
 jobs:
   security-and-build:
-    # Tell GitHub to spin up a fresh, temporary Ubuntu Linux machine in the cloud
     runs-on: ubuntu-latest
 
     steps:
-    # Step 1: Download your repository code onto the runner machine
     - name: Checkout Source Code
       uses: actions/checkout@v4
 
@@ -21,10 +18,10 @@ jobs:
       with:
         node-version: 20
 
-    # Step 3: Install dependencies inside the Phase 2 directory
+    # Step 3: Install dependencies inside your exact folder path
     - name: Install Application Dependencies
       run: |
-        cd Phase_2_CICD
+        cd Phase_2_CI
         npm install
 
     # Step 4: Run the automated security scan using Snyk CLI
@@ -32,9 +29,8 @@ jobs:
       env:
         SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
       run: |
-        cd Phase_2_CICD
+        cd Phase_2_CI
         npx snyk test --severity-threshold=high
-
 
     # Step 5: Initialize Docker's build environment
     - name: Set up Docker Buildx
@@ -47,11 +43,11 @@ jobs:
         username: ${{ secrets.DOCKERHUB_USERNAME }}
         password: ${{ secrets.DOCKERHUB_TOKEN }}
 
-    # Step 7: Build and push the container to Docker Hub
+    # Step 7: Build and push the container using the exact folder context
     - name: Build and Push Docker Image
       uses: docker/build-push-action@v5
       with:
-        context: ./Phase_2_CICD
+        context: ./Phase_2_CI
         push: true
         tags: |
           ${{ secrets.DOCKERHUB_USERNAME }}/portfolio-app:latest
