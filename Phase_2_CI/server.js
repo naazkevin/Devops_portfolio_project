@@ -3,7 +3,7 @@ const app = express();
 const PORT = 3000;
 
 app.get('/', (req, res) => {
-    res.send('<h1>🚀 DevOps Portfolio Pipeline is fully automated!</h1>');
+    res.send('<h1>🚀 DevOps Portfolio Pipeline is fully automated and tested with Gitops auto upgrade!</h1>');
 });
 
 app.listen(PORT, () => {
