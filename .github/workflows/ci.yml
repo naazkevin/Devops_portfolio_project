@@ -7,6 +7,10 @@ on:
 jobs:
   security-and-build:
     runs-on: ubuntu-latest
+    
+    # 1. Add write permissions so the workflow can commit and push back to repo
+    permissions:
+      contents: write
 
     steps:
     - name: Checkout Source Code
@@ -52,3 +56,17 @@ jobs:
         tags: |
           ${{ secrets.DOCKERHUB_USERNAME }}/portfolio-app:latest
           ${{ secrets.DOCKERHUB_USERNAME }}/portfolio-app:${{ github.sha }}
+
+    # Step 8: Automatically update deployment.yaml with the new commit SHA tag
+    - name: Update image tag in deployment.yaml
+      run: |
+        sed -i 's|image: naaz123kevin/portfolio-app:.*|image: naaz123kevin/portfolio-app:${{ github.sha }}|g' Phase_3_CD\(Argo\)/deployment.yaml
+
+    # Step 9: Commit and push the updated deployment.yaml back to GitHub
+    - name: Commit and push changes
+      run: |
+        git config --global user.name "GitHub Actions Bot"
+        git config --global user.email "actions@github.com"
+        git add Phase_3_CD\(Argo\)/deployment.yaml
+        git commit -m "chore: update image tag to ${{ github.sha }} [skip ci]"
+        git push
