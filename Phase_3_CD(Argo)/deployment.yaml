@@ -18,7 +18,7 @@ spec:
       containers:
       - name: web-app
         # Point this directly to your public Docker Hub image built in Phase 2
-        image: naaz123kevin/portfolio-app:latest
+        image: naaz123kevin/portfolio-app:67292470747e1f59017fd7419c2bacd110ad1787
         imagePullPolicy: Always
         ports:
         - containerPort: 3000
