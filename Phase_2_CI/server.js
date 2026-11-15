@@ -1,11 +1,42 @@
 const express = require('express');
-const app = express();
-const PORT = 3000;
+const client = require('prom-client');
 
-app.get('/', (req, res) => {
-    res.send('<h1>🚀 DevOps Portfolio Pipeline is fully automated and tested with Gitops auto upgrade!</h1>');
+const app = express();
+const port = process.env.PORT || 3000;
+
+// Create a Registry to register metrics
+const register = new client.Registry();
+
+// Add default system metrics (CPU, memory, event loop lag, etc.)
+client.collectDefaultMetrics({ register });
+
+// Define a custom counter metric for total HTTP requests
+const httpRequestCounter = new client.Counter({
+  name: 'http_requests_total',
+  help: 'Total number of HTTP requests received',
+  labelNames: ['method', 'route', 'status_code'],
+});
+register.registerMetric(httpRequestCounter);
+
+// Middleware to count requests
+app.use((req, res, next) => {
+  res.on('finish', () => {
+    httpRequestCounter.labels(req.method, req.path, res.statusCode).inc();
+  });
+  next();
 });
 
-app.listen(PORT, () => {
-    console.log(`Application running locally on port ${PORT}`);
+// Basic app route
+app.get('/', (req, res) => {
+  res.send('Hello from Cloud-Native DevOps Portfolio App!');
+});
+
+// Expose the /metrics endpoint for Prometheus
+app.get('/metrics', async (req, res) => {
+  res.setHeader('Content-Type', register.contentType);
+  res.send(await register.metrics());
+});
+
+app.listen(port, () => {
+  console.log(`App running on port ${port}`);
 });
